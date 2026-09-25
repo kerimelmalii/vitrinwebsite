@@ -1,0 +1,14 @@
+# İşletim sistemi ve editör dosyaları
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# İleride Next.js'e geçişte oluşacaklar
+node_modules/
+.next/
+out/
+dist/
+.env
+.env.*
+!.env.example
