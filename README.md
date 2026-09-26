@@ -1,6 +1,6 @@
 # Vitrin
 
-İşletmeler için 5.000 TL'ye profesyonel web sitesi satan, Türkçe tek sayfalık satış sitesinin **çalışan prototipi**.
+İşletmeler için 10.000 TL'ye profesyonel web sitesi satan, Türkçe tek sayfalık satış sitesinin **çalışan prototipi**.
 
 Müşteri fiyatı görür, ek özellik seçer, siparişini verir, öder ve web sitesi için içeriklerini proje formundan gönderir. Sitede ayrıca "Neden Web Sitesi?" sayfası, blog ve yasal metinler bulunur.
 
