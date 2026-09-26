@@ -12,9 +12,13 @@ statik host'ta çalışır. Detaylı iş/hukuk/backend planı: `DEVIR-BELGESI.md
   mantığı (ödeme oturumu, webhook) Supabase Edge Functions'ta olacak, Next.js API route değil.
 - **Yasal metinler taslak**, köşeli parantezli alanlar dolduruluncaya ve bir hukukçu onaylayana kadar
   gerçek müşteriden veri toplamak için kullanılmamalı.
-- Şu an **GitHub Pages**'te yayında (`https://kerimelmalii.github.io/vitrinwebsite/`) — bu geçici bir
-  önizleme, GitHub Pages özel HTTP başlığı desteklemez. Gerçek domain + Vercel'e geçilecek
-  (`vercel.json` zaten hazır).
+- Gerçek domain bağlı: **`https://vitrinweb.com.tr`**, GitHub Pages üzerinden özel domain ile
+  yayında (`public/CNAME`). GitHub Pages hâlâ özel HTTP başlığı desteklemez (CSP yalnızca
+  `<meta>` etiketiyle, HSTS/X-Frame-Options hiç yok) — bu artık geçici bir önizleme değil, gerçek
+  müşteri trafiği bu domain'den geçiyor, o yüzden Vercel'e geçiş önceliklidir (`vercel.json` hazır).
+  `next.config.ts`'teki `GITHUB_PAGES` bayrağı **artık `"false"`** (workflow'da): özel domain kökten
+  sunulduğu için `basePath` gerekmiyor; `"true"` yapmak her linki yanlışlıkla `/vitrinwebsite/`
+  önekiyle üretir ve siteyi kırar (bkz. #11/#12 olayı — bunu tekrar değiştirmeden önce mutlaka bu notu oku).
 - Tamamlanan siparişler isteğe bağlı olarak bir Google E-Tablo'ya (`src/lib/order-webhook.ts`,
   kurulum: `SIPARIS-TAKIBI.md`) ve isteğe bağlı olarak Supabase'e (`src/lib/supabase-order.ts`,
   kurulum: `SUPABASE-KURULUM.md`) bildirilir — ikisi de INSERT-only, ortam değişkeni tanımlı

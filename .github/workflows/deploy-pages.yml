@@ -33,7 +33,12 @@ jobs:
       - name: Statik siteyi derle
         run: npm run build
         env:
-          GITHUB_PAGES: "true"
+          # Özel domain (vitrinweb.com.tr) kök dizinden sunulur; GitHub Pages'in kendi
+          # alt yolu (kullanıcı-adı.github.io/vitrinwebsite/) burada söz konusu değil,
+          # bu yüzden basePath GEREKMEZ. "true" yapılırsa her link/asset yanlışlıkla
+          # /vitrinwebsite/ önekiyle üretilir (bkz. #11 ve bu PR).
+          GITHUB_PAGES: "false"
+          NEXT_PUBLIC_SITE_URL: "https://vitrinweb.com.tr"
           NEXT_PUBLIC_ORDER_WEBHOOK_URL: ${{ secrets.ORDER_WEBHOOK_URL }}
           NEXT_PUBLIC_ORDER_WEBHOOK_SECRET: ${{ secrets.ORDER_WEBHOOK_SECRET }}
 
