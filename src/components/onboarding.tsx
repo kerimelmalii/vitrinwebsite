@@ -413,10 +413,6 @@ export function ProjectOnboarding() {
         </div>
         <div className="panel">
           <h2>Onay</h2>
-          <p className="fine">
-            Siparişinizden itibaren 14 gün içinde ve çalışma başlamadan önce siparişinizi gerekçe göstermeden iptal
-            edebilir, ödemenizin tamamını geri alabilirsiniz.
-          </p>
           <label className="consent">
             <input
               type="checkbox"
