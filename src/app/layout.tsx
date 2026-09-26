@@ -26,8 +26,10 @@ const CSP = [
 ].join("; ");
 
 const SITE_TITLE = `${money(BASE_PRICE)} TL'ye profesyonel web sitesi`;
+/* Google aramada ~155-160 karakterden sonra kırpıyor; bu yüzden en önemli bilgiler (fiyat,
+   temel değer önermeleri) ilk 130 karaktere sığdırılıyor. */
 const SITE_DESCRIPTION =
-  "İşletmenizin dijital vitrini. 10.000 TL'ye modern, hızlı ve mobil uyumlu web sitesi. İlk yıl servis ve bakım ücretsiz, taahhüt yok. Siparişinizi dakikalar içinde oluşturun.";
+  "İşletmenizin dijital vitrini. 10.000 TL'ye modern, hızlı, mobil uyumlu web sitesi. İlk yıl servis ve bakım ücretsiz, taahhüt yok.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

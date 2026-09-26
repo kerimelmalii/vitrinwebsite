@@ -321,6 +321,7 @@ Yayından önce yapılması gerekenler:
 - [x] Sahibin siparişleri görebileceği geçici bir yer: ödeme tamamlanınca `src/lib/order-webhook.ts` sipariş özetini bir Google E-Tablo'ya yazar (bkz. SIPARIS-TAKIBI.md). Gerçek admin paneli/veritabanına (aşağıdaki madde) geçilince kaldırılabilir.
 - [x] Supabase karar verildi (veri: Supabase, ödeme: iyzico) ve veri katmanının ilk parçası eklendi: `orders` tablosu + INSERT-only RLS (`supabase/schema.sql`), istemci yazımı (`src/lib/supabase-order.ts`, kurulum: `SUPABASE-KURULUM.md`)
 - [x] Temel paket fiyatı 5.000 TL'den 10.000 TL'ye yükseltildi (`BASE_PRICE`, `config.ts`); `PRICING_VERSION` `2026-10`'a bumplandı
+- [x] Ana sayfa logosuna zaten ana sayfadayken basınca kaydırmanın yukarı dönmeme hatası düzeltildi (`Logo`, `header.tsx`) ve 10 yeni SEO odaklı blog yazısı eklendi (`data/blog.ts`, toplam 13 yazı)
 - [ ] iyzico entegrasyonu + Supabase Edge Functions: ödeme oturumu, webhook (imza doğrulama, `paid` geçişi, fiyat sunucuda yeniden hesaplama), erişim token'ı ile sorgulama/güncelleme, teklif akışı, yıllık servis yenilemesi (bkz. bölüm 8)
 - [ ] Bölüm 7b'deki tüm sunucu güvenlik maddeleri
 - [ ] Dosya yükleme, yönetici paneli, e-posta bildirimleri
