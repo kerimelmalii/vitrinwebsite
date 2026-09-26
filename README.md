@@ -33,6 +33,12 @@ npx serve out   # yerel önizleme (herhangi bir statik dosya sunucusu da olur)
 
 `out/` klasörü, herhangi bir statik dosya sunucusunda (Vercel, Netlify, Cloudflare Pages, Nginx, S3, ...) doğrudan barındırılabilir; Node.js sunucusu gerekmez.
 
+### GitHub Pages'te önizleme
+
+Depoda `.github/workflows/deploy-pages.yml` hazır: `main`'e her push'ta siteyi derleyip GitHub Pages'e yayınlar. Devreye alması için depo ayarlarında **bir kerelik** şu adım gerekir: **Settings → Pages → Build and deployment → Source** kısmını **"GitHub Actions"** olarak değiştirin (varsayılan "Deploy from a branch" ile çalışmaz). Ardından site `https://<kullanıcı-adı>.github.io/vitrinwebsite/` adresinde yayınlanır.
+
+Bu yalnızca geçici bir önizlemedir; gerçek domain bağlandığında Vercel/Netlify gibi bir servise geçilmesi önerilir (bkz. `next.config.ts`'teki `GITHUB_PAGES` ortam değişkenine bağlı `basePath` ayarı — yalnızca GitHub Pages alt yolu için gereklidir, başka bir barındırmada devre dışıdır).
+
 Demo ödemede `0002` ile biten kart numaraları reddedilir, diğerleri kabul edilir. Bireysel fatura için test T.C. kimlik no: `10000000146`.
 
 ## Teknoloji
@@ -41,7 +47,7 @@ Demo ödemede `0002` ile biten kart numaraları reddedilir, diğerleri kabul edi
 - Statik dışa aktarım (`output: "export"`): derleme sonucu, sunucu gerektirmeyen saf HTML/CSS/JS dosyalarıdır
 - Her sayfa kendi adresinde (`/blog/<slug>`, `/yasal/<id>`) gerçek, önceden üretilmiş (SSG) bir HTML dosyasıdır — arama motorları için doğrudan dizinlenebilir
 - Elle yazılmış CSS (`src/app/globals.css`); derlenmiş Tailwind preflight ve birkaç yerleşim yardımcısı korunmuştur
-- Manrope yazı tipi dosyanın kendi sunucusundan `woff2` olarak yüklenir (`public/fonts`), üçüncü tarafa istek gitmez
+- Manrope yazı tipi dosyanın kendi sunucusundan `woff2` olarak yüklenir (`src/app/fonts`), üçüncü tarafa istek gitmez
 - Sipariş durumu React Context ile yönetilir (`src/lib/order-context.tsx`), `localStorage` üzerinde kalıcıdır
 
 ## Proje yapısı
@@ -52,7 +58,7 @@ Demo ödemede `0002` ile biten kart numaraları reddedilir, diğerleri kabul edi
 | `src/components/` | UI bileşenleri (başlık, altbilgi, sipariş adımları, blog, yasal metin gösterimi, ...) |
 | `src/lib/` | Yapılandırma, güvenlik/doğrulama yardımcıları, fiyatlandırma, sipariş depolama ve ödeme simülasyonu, tipler |
 | `src/data/` | İçerik: sektörler, ek özellikler, SSS, yasal metinler, blog yazıları, satıcı bilgileri |
-| `public/fonts/` | Manrope `woff2` dosyaları |
+| `src/app/fonts/` | Manrope `woff2` dosyaları |
 | `DEVIR-BELGESI.md` | Projeyi devralacak geliştirici için ayrıntılı belge |
 
 Planlanan canlı sürüm: bu statik önyüz + PostgreSQL tabanlı bir API + hosted ödeme sağlayıcısı (DEVIR-BELGESI.md, bölüm 8).

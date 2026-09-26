@@ -13,7 +13,7 @@ siteye girer → fiyatı görür → (isterse "Neden Web Sitesi?" sayfasında ar
 ## 2. Mevcut durum
 `src/`: Next.js 16 (App Router) + TypeScript projesi. İçeriği:
 - React 19, Next.js dosya tabanlı yönlendirme,
-- Manrope yazı tipi `public/fonts/` altında iki `woff2` dosyası olarak (Google Fonts'a istek yok; KVKK açısından üçüncü tarafa IP aktarımı azalır),
+- Manrope yazı tipi `src/app/fonts/` altında iki `woff2` dosyası olarak (Google Fonts'a istek yok; KVKK açısından üçüncü tarafa IP aktarımı azalır),
 - elle yazılmış CSS (`src/app/globals.css`),
 - derlenmiş Tailwind preflight ve birkaç yerleşim yardımcısı (aynı dosyanın sonunda).
 

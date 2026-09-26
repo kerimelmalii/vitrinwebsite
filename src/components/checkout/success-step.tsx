@@ -8,7 +8,8 @@ import { Icon } from "@/components/icons";
 import { useApp } from "@/lib/order-context";
 
 function accessUrl(t: string): string {
-  return location.origin + "/baslangic/?t=" + t;
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+  return location.origin + basePath + "/baslangic/?t=" + t;
 }
 
 function AccessLink({ t }: { t: string }) {
