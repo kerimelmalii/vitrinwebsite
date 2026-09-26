@@ -81,16 +81,20 @@ function NavButton({ item, onNavigate }: { item: NavItem; onNavigate: () => void
     );
   }
   return (
-    <button
-      type="button"
+    <Link
+      href={`/#${item.sec}`}
       className="navl"
-      onClick={() => {
+      onClick={(e) => {
+        /* Ctrl/Cmd/Shift+tık veya orta tık: yeni sekmede açma gibi tarayıcı
+           varsayılanına izin ver, yalnızca normal tıklamada JS ile kaydır. */
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+        e.preventDefault();
         onNavigate();
         goSection(item.sec as string);
       }}
     >
       {item.label}
-    </button>
+    </Link>
   );
 }
 
