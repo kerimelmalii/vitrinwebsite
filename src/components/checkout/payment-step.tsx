@@ -305,7 +305,12 @@ export function PaymentStep() {
             </Field>
           </div>
         ) : (
-          <Field id="i-tax" label="T.C. kimlik numarası" error={err.itax}>
+          <Field
+            id="i-tax"
+            label="T.C. kimlik numarası"
+            error={err.itax}
+            hint="Faturanız için yasal olarak gereklidir; yalnızca bu amaçla kullanılır."
+          >
             <Inp
               id="i-tax"
               inputMode="numeric"
