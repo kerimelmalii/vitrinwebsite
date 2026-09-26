@@ -10,8 +10,21 @@ import { useApp } from "@/lib/order-context";
 import type { NavItem } from "@/lib/types";
 
 export function Logo() {
+  const pathname = usePathname().replace(/\/$/, "") || "/";
   return (
-    <Link className="logo" href="/" aria-label="Vitrin, ana sayfa">
+    <Link
+      className="logo"
+      href="/"
+      aria-label="Vitrin, ana sayfa"
+      onClick={(e) => {
+        /* Zaten ana sayfadaysa Link'in kendisi gezinme yapmaz (URL aynı), bu yüzden
+           kaydırma konumu sıfırlanmaz; bunu elle yapıyoruz. */
+        if (pathname === "/") {
+          e.preventDefault();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }}
+    >
       vitrin
       <i></i>
     </Link>
