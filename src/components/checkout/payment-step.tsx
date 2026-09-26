@@ -9,6 +9,7 @@ import { TL, VAT_NOTE } from "@/lib/config";
 import { useApp } from "@/lib/order-context";
 import { Backend, buildRecord } from "@/lib/backend";
 import { LS } from "@/lib/storage";
+import { sendOrderToWebhook } from "@/lib/order-webhook";
 import { PaymentProvider } from "@/lib/payment";
 import { pricing } from "@/lib/pricing";
 import { LIMITS, token, validTCKN } from "@/lib/security";
@@ -184,8 +185,10 @@ export function PaymentStep() {
       /* Proje formuna erişim anahtarı. Üretimde sunucu üretir, özetini saklar ve e-postayla gönderir. */
       const accessToken = token(24);
       const paid = { ...order, consents, accessToken, status: "paid" as const, project: "Bilgiler Bekleniyor" as const, paymentRef: res.ref };
-      await Backend.upsert(buildRecord(paid));
+      const record = buildRecord(paid);
+      await Backend.upsert(record);
       LS.del("vitrin:draft");
+      sendOrderToWebhook(record);
       patch({ consents, accessToken, status: "paid", project: "Bilgiler Bekleniyor", paymentRef: res.ref, step: 4 });
       setCard({ name: "", number: "", exp: "", cvv: "" });
       window.scrollTo({ top: 0 });
