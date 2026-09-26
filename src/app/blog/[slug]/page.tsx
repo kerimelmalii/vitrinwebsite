@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { BlogPost } from "@/components/blog-post";
 import { BLOG, dateToISO } from "@/data/blog";
 import { COMPANY } from "@/data/company";
+import { safeJsonLd } from "@/lib/json-ld";
 import { SITE_URL } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -40,7 +41,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   };
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
       <BlogPost slug={slug} />
     </>
   );

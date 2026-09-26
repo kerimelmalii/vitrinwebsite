@@ -161,7 +161,7 @@ export function ProjectOnboarding() {
 
   if (!ready) return <main id="main" className="container-x co"></main>;
 
-  if (t && RX.token.test(t) && t !== order.accessToken) {
+  if (t && t !== order.accessToken) {
     return (
       <main id="main" className="container-x co">
         <div className="ok-wrap">
