@@ -33,7 +33,7 @@ jobs:
       - name: Statik siteyi derle
         run: npm run build
         env:
-          GITHUB_PAGES: "true"
+          GITHUB_PAGES: "false"
           NEXT_PUBLIC_ORDER_WEBHOOK_URL: ${{ secrets.ORDER_WEBHOOK_URL }}
           NEXT_PUBLIC_ORDER_WEBHOOK_SECRET: ${{ secrets.ORDER_WEBHOOK_SECRET }}
 
