@@ -7,14 +7,18 @@ statik host'ta çalışır. Detaylı iş/hukuk/backend planı: `DEVIR-BELGESI.md
 ## Durum ve kısıtlar (unutma)
 
 - **Prototip:** ödeme simüle edilir (`0002` ile biten kart reddedilir), siparişler yalnızca
-  müşterinin `localStorage`'ında durur. Gerçek backend yok — planlanan: Supabase.
+  müşterinin `localStorage`'ında durur. Gerçek backend yok — kararlaştırılan: veri Supabase,
+  ödeme iyzico (bkz. DEVIR-BELGESI.md bölüm 8). Site statik export olarak kalıyor; sunucu
+  mantığı (ödeme oturumu, webhook) Supabase Edge Functions'ta olacak, Next.js API route değil.
 - **Yasal metinler taslak**, köşeli parantezli alanlar dolduruluncaya ve bir hukukçu onaylayana kadar
   gerçek müşteriden veri toplamak için kullanılmamalı.
 - Şu an **GitHub Pages**'te yayında (`https://kerimelmalii.github.io/vitrinwebsite/`) — bu geçici bir
   önizleme, GitHub Pages özel HTTP başlığı desteklemez. Gerçek domain + Vercel'e geçilecek
   (`vercel.json` zaten hazır).
-- Tamamlanan siparişler isteğe bağlı olarak bir Google E-Tablo'ya bildirilir (`src/lib/order-webhook.ts`,
-  kurulum: `SIPARIS-TAKIBI.md`).
+- Tamamlanan siparişler isteğe bağlı olarak bir Google E-Tablo'ya (`src/lib/order-webhook.ts`,
+  kurulum: `SIPARIS-TAKIBI.md`) ve isteğe bağlı olarak Supabase'e (`src/lib/supabase-order.ts`,
+  kurulum: `SUPABASE-KURULUM.md`) bildirilir — ikisi de INSERT-only, ortam değişkeni tanımlı
+  değilse sessizce atlanır.
 
 ## Kod yapısı
 
@@ -22,7 +26,8 @@ statik host'ta çalışır. Detaylı iş/hukuk/backend planı: `DEVIR-BELGESI.md
   `siparis`, `baslangic`, `yasal/[id]`, artı `sitemap.ts`/`robots.ts`.
 - `src/components/` — UI; `src/components/checkout/` — sipariş adımları.
 - `src/lib/` — yapılandırma, güvenlik/doğrulama (`security.ts`), sipariş durumu (`order-context.tsx`,
-  React Context + `localStorage`), sahte backend (`backend.ts`), ödeme simülasyonu (`payment.ts`).
+  React Context + `localStorage`), sahte backend (`backend.ts`), ödeme simülasyonu (`payment.ts`),
+  Supabase yazımı (`supabase-order.ts`).
 - `src/data/` — statik içerik (fiyatlar, SSS, yasal metinler, blog yazıları, satıcı bilgisi).
 
 ## Kurallar
