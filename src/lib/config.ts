@@ -1,9 +1,9 @@
 /** Temel paket fiyatı ve yıllık servis ücreti. */
-export const BASE_PRICE = 5000;
+export const BASE_PRICE = 10000;
 export const YEARLY = 1000;
 
 /** Fiyat listesi sürümü: sunucu, siparişteki sürüm güncel değilse toplamı yeniden hesaplar ve müşteriyi uyarır. */
-export const PRICING_VERSION = "2026-09";
+export const PRICING_VERSION = "2026-10";
 
 /** Tüketiciye gösterilen fiyatlar vergiler dahil olmalıdır. Sahibi KDV durumunu teyit etmeli (bkz. DEVIR-BELGESI.md bölüm 9). */
 export const VAT_INCLUDED = true;

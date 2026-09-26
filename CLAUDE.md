@@ -1,6 +1,6 @@
 # Vitrin
 
-Türkçe, tek paket (5.000 TL) satan bir web sitesi ajansı satış sitesi. Next.js 16 (App Router) +
+Türkçe, tek paket (10.000 TL) satan bir web sitesi ajansı satış sitesi. Next.js 16 (App Router) +
 TypeScript, statik dışa aktarım (`output: "export"`) — sunucu yok, `out/` klasörü herhangi bir
 statik host'ta çalışır. Detaylı iş/hukuk/backend planı: `DEVIR-BELGESI.md`. Genel bakış: `README.md`.
 

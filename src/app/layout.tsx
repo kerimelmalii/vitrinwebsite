@@ -27,7 +27,7 @@ const CSP = [
 
 const SITE_TITLE = `${money(BASE_PRICE)} TL'ye profesyonel web sitesi`;
 const SITE_DESCRIPTION =
-  "İşletmenizin dijital vitrini. 5.000 TL'ye modern, hızlı ve mobil uyumlu web sitesi. İlk yıl servis ve bakım ücretsiz, taahhüt yok. Siparişinizi dakikalar içinde oluşturun.";
+  "İşletmenizin dijital vitrini. 10.000 TL'ye modern, hızlı ve mobil uyumlu web sitesi. İlk yıl servis ve bakım ücretsiz, taahhüt yok. Siparişinizi dakikalar içinde oluşturun.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

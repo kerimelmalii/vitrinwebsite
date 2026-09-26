@@ -3,7 +3,7 @@ import { PricingPage } from "@/components/pricing-page";
 
 export const metadata: Metadata = {
   title: "Ücretlendirme",
-  description: "Temel web sitesi 5.000 TL. Ek özellik fiyatları ve yıllık servis ücretleri.",
+  description: "Temel web sitesi 10.000 TL. Ek özellik fiyatları ve yıllık servis ücretleri.",
   alternates: { canonical: "/ucretlendirme" },
 };
 

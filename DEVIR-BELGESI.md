@@ -5,7 +5,7 @@ Bu belge, projeyi başka bir yapay zekâ veya geliştiriciyle sürdürmek için 
 **v6 notu:** Proje, önceki sürümde React 18 + htm ile yazılmış tek dosyalık bir prototipti (derleme adımı yok, doğrudan tarayıcıda açılıyordu). v6'da bu, TypeScript ile yazılmış bir Next.js 16 (App Router) projesine dönüştürüldü: statik dışa aktarım (`output: "export"`) kullanıldığı için sonuç yine sunucu gerektirmeyen saf HTML/CSS/JS'tir, ama artık her sayfa gerçek bir adrese sahiptir (`#/blog/slug` yerine `/blog/slug`) ve derleme zamanında (SSG) üretilir. Bu, bölüm 7d'de belirtilen hash-routing/SEO sorununu çözer. İşlevsellik, tasarım, veriler ve güvenlik önlemleri birebir korundu; hiçbir metin veya davranış kasıtlı olarak değiştirilmedi.
 
 ## 1. Ne yapılıyor
-Türkçe bir satış sitesi: **5.000 TL'ye temel web sitesi**, ilk yıl servis ve bakım ücretsiz, 2. yıl 1.000 TL, sonraki yıllarda yıllık ücret enflasyon (TÜFE) oranında güncellenir. Taahhüt yok: müşteri ilk yılın sonunda (ve sonraki her yenilemeden önce) servisi ücretsiz iptal edebilir. Ek özellikler ayrı satılır.
+Türkçe bir satış sitesi: **10.000 TL'ye temel web sitesi**, ilk yıl servis ve bakım ücretsiz, 2. yıl 1.000 TL, sonraki yıllarda yıllık ücret enflasyon (TÜFE) oranında güncellenir. Taahhüt yok: müşteri ilk yılın sonunda (ve sonraki her yenilemeden önce) servisi ücretsiz iptal edebilir. Ek özellikler ayrı satılır.
 
 Müşteri yolculuğu:
 siteye girer → fiyatı görür → (isterse "Neden Web Sitesi?" sayfasında araştırmaları okur) → "Web Siteni Şimdi Başlat" veya "Kendi Paketini Oluştur" → bilgilerini girer → ek özellik seçer, gerekirse teklif ister → öder → proje başlangıç formunu doldurur (hemen ya da erişim bağlantısıyla sonra).
@@ -43,7 +43,7 @@ Blog ve yasal sayfalar `generateStaticParams` ile derleme zamanında (SSG) üret
 - **Yasal metinler:** Taslak yer tutucu (`LEGAL` sabiti). Her birinde bulunması gerekenler listeli.
 
 ## 3. Kod yapısı (`src/` altında)
-1. **`src/app/layout.tsx`:** kök düzen — meta, JSON-LD (fiyat 5000), `referrer` politikası, `OrderProvider` + `AppShell` sarmalayıcı.
+1. **`src/app/layout.tsx`:** kök düzen — meta, JSON-LD (fiyat 10000), `referrer` politikası, `OrderProvider` + `AppShell` sarmalayıcı.
 2. **`src/app/globals.css`:** tüm CSS. Renkler `:root` değişkenlerinde, yalnızca açık tema, ardından iki `@font-face` (Manrope) ve derlenmiş Tailwind bloğu; yeni bir Tailwind sınıfı eklenirse blok yeniden derlenmeli ya da sınıf CSS'e elle yazılmalı.
 3. **`src/lib/`:**
    - Yapılandırma: `config.ts` (`BASE_PRICE`, `YEARLY`, `PRICING_VERSION`, `VAT_INCLUDED`, `money`, `TL`).
@@ -59,7 +59,7 @@ Blog ve yasal sayfalar `generateStaticParams` ile derleme zamanında (SSG) üret
 ## 4. Fiyatlar
 | Kalem | Fiyat |
 |---|---|
-| Temel web sitesi | 5.000 TL |
+| Temel web sitesi | 10.000 TL |
 | Blog | 2.000 TL |
 | Online Randevu | 3.000 TL |
 | Gelişmiş Form | 1.250 TL |
@@ -320,6 +320,7 @@ Yayından önce yapılması gerekenler:
 - [x] TypeScript'e ve gerçek sayfa adreslerine (Next.js, SSG) geçiş (v6)
 - [x] Sahibin siparişleri görebileceği geçici bir yer: ödeme tamamlanınca `src/lib/order-webhook.ts` sipariş özetini bir Google E-Tablo'ya yazar (bkz. SIPARIS-TAKIBI.md). Gerçek admin paneli/veritabanına (aşağıdaki madde) geçilince kaldırılabilir.
 - [x] Supabase karar verildi (veri: Supabase, ödeme: iyzico) ve veri katmanının ilk parçası eklendi: `orders` tablosu + INSERT-only RLS (`supabase/schema.sql`), istemci yazımı (`src/lib/supabase-order.ts`, kurulum: `SUPABASE-KURULUM.md`)
+- [x] Temel paket fiyatı 5.000 TL'den 10.000 TL'ye yükseltildi (`BASE_PRICE`, `config.ts`); `PRICING_VERSION` `2026-10`'a bumplandı
 - [ ] iyzico entegrasyonu + Supabase Edge Functions: ödeme oturumu, webhook (imza doğrulama, `paid` geçişi, fiyat sunucuda yeniden hesaplama), erişim token'ı ile sorgulama/güncelleme, teklif akışı, yıllık servis yenilemesi (bkz. bölüm 8)
 - [ ] Bölüm 7b'deki tüm sunucu güvenlik maddeleri
 - [ ] Dosya yükleme, yönetici paneli, e-posta bildirimleri
