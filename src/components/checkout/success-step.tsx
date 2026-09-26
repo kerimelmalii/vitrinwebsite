@@ -1,54 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState } from "react";
 import { Stepper } from "@/components/checkout/stepper";
 import { QuoteNote } from "@/components/addons";
 import { Icon } from "@/components/icons";
 import { useApp } from "@/lib/order-context";
-
-function accessUrl(t: string): string {
-  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-  return location.origin + basePath + "/baslangic/?t=" + t;
-}
-
-function AccessLink({ t }: { t: string }) {
-  const [copied, setCopied] = useState(false);
-  const url = accessUrl(t);
-  const ref = useRef<HTMLElement>(null);
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      /* Pano izni yoksa metni seçili bırak: kullanıcı kendisi kopyalar. */
-      const el = ref.current;
-      if (el) {
-        const r = document.createRange();
-        r.selectNodeContents(el);
-        const sel = getSelection();
-        sel?.removeAllRanges();
-        sel?.addRange(r);
-      }
-    }
-  };
-  return (
-    <div className="acc-link">
-      <b>Proje formu bağlantınız</b>
-      <code ref={ref}>{url}</code>
-      <div className="row">
-        <button type="button" className="btn btn-line" style={{ padding: ".6rem 1.1rem", fontSize: ".88rem" }} onClick={copy}>
-          {copied ? "Kopyalandı" : "Bağlantıyı kopyala"}
-        </button>
-        <span className="fine">
-          Formu daha sonra bu bağlantıdan doldurabilirsiniz. Bu bağlantı e-postanıza da gönderilir. Bağlantı size
-          özeldir, kimseyle paylaşmayın.
-        </span>
-      </div>
-    </div>
-  );
-}
 
 export function SuccessStep() {
   const { order } = useApp();
@@ -88,7 +44,6 @@ export function SuccessStep() {
             </li>
           ))}
         </ol>
-        {order.accessToken && <AccessLink t={order.accessToken} />}
         <Link
           className="btn btn-primary btn-lg"
           href={order.accessToken ? "/baslangic/?t=" + order.accessToken : "/baslangic/"}
