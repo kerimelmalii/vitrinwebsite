@@ -299,7 +299,8 @@ Yayından önce yapılması gerekenler:
 
 ## 9. Yapılacaklar
 - [x] TypeScript'e ve gerçek sayfa adreslerine (Next.js, SSG) geçiş (v6)
-- [ ] Backend, ödeme sağlayıcısı, teklif akışı ve yıllık servis yenilemesi
+- [x] Sahibin siparişleri görebileceği geçici bir yer: ödeme tamamlanınca `src/lib/order-webhook.ts` sipariş özetini bir Google E-Tablo'ya yazar (bkz. SIPARIS-TAKIBI.md). Gerçek admin paneli/veritabanına (aşağıdaki madde) geçilince kaldırılabilir.
+- [ ] Backend, ödeme sağlayıcısı, teklif akışı ve yıllık servis yenilemesi (planlanan: Supabase)
 - [ ] Bölüm 7b'deki tüm sunucu güvenlik maddeleri
 - [ ] Dosya yükleme, yönetici paneli, e-posta bildirimleri
 - [ ] Hukuki metinler (avukatla):

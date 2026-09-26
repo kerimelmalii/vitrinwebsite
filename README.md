@@ -12,7 +12,7 @@ Bu bir **prototiptir**, yayına hazır değildir:
 - Yasal metinler **taslaktır**. Köşeli parantezli alanlar doldurulmalı ve metinler bir hukukçu tarafından gözden geçirilmelidir.
 - Satıcı bilgileri (`COMPANY`) ve Instagram adresi (`INSTAGRAM_URL`) yer tutucudur.
 
-Ayrıntılar, yapılacaklar ve backend planı için: [DEVIR-BELGESI.md](DEVIR-BELGESI.md)
+Ayrıntılar, yapılacaklar ve backend planı için: [DEVIR-BELGESI.md](DEVIR-BELGESI.md). Tamamlanan siparişleri bir Google E-Tablo'da görmek için: [SIPARIS-TAKIBI.md](SIPARIS-TAKIBI.md).
 
 ## Çalıştırma
 
@@ -59,6 +59,8 @@ Demo ödemede `0002` ile biten kart numaraları reddedilir, diğerleri kabul edi
 | `src/lib/` | Yapılandırma, güvenlik/doğrulama yardımcıları, fiyatlandırma, sipariş depolama ve ödeme simülasyonu, tipler |
 | `src/data/` | İçerik: sektörler, ek özellikler, SSS, yasal metinler, blog yazıları, satıcı bilgileri |
 | `src/app/fonts/` | Manrope `woff2` dosyaları |
+| `src/lib/order-webhook.ts` | Ödeme tamamlanınca sipariş özetini Google E-Tablo'ya bildiren yardımcı (bkz. SIPARIS-TAKIBI.md) |
 | `DEVIR-BELGESI.md` | Projeyi devralacak geliştirici için ayrıntılı belge |
+| `SIPARIS-TAKIBI.md` | Sipariş bildirimi (Google E-Tablo) kurulum rehberi |
 
 Planlanan canlı sürüm: bu statik önyüz + PostgreSQL tabanlı bir API + hosted ödeme sağlayıcısı (DEVIR-BELGESI.md, bölüm 8).
