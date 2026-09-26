@@ -14,7 +14,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const doc = LEGAL_DOCS[id];
-  return doc ? { title: doc.t } : {};
+  return doc ? { title: doc.t, alternates: { canonical: `/yasal/${id}` } } : {};
 }
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
