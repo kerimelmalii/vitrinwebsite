@@ -10,6 +10,7 @@ import { useApp } from "@/lib/order-context";
 import { Backend, buildRecord } from "@/lib/backend";
 import { LS } from "@/lib/storage";
 import { sendOrderToWebhook } from "@/lib/order-webhook";
+import { sendOrderToSupabase } from "@/lib/supabase-order";
 import { PaymentProvider } from "@/lib/payment";
 import { pricing } from "@/lib/pricing";
 import { LIMITS, token, validTCKN } from "@/lib/security";
@@ -189,6 +190,7 @@ export function PaymentStep() {
       await Backend.upsert(record);
       LS.del("vitrin:draft");
       sendOrderToWebhook(record);
+      sendOrderToSupabase(record);
       patch({ consents, accessToken, status: "paid", project: "Bilgiler Bekleniyor", paymentRef: res.ref, step: 4 });
       setCard({ name: "", number: "", exp: "", cvv: "" });
       window.scrollTo({ top: 0 });

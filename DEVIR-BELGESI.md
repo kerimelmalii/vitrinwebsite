@@ -208,7 +208,24 @@ Gerçek bir backend'e (sunucu tarafı render veya route handler) geçilince `scr
   - Bağımlılıklar düzenli taranır (npm audit/Dependabot).
 
 ## 8. Gerçek backend planı
-Önerilen yapı: Next.js (App Router) + PostgreSQL (Prisma) + S3 uyumlu depolama.
+Karar verildi (bkz. bölüm 9): veri katmanı **Supabase** (PostgreSQL + Auth + Storage +
+Edge Functions), ödeme sağlayıcısı **iyzico**. Site statik dışa aktarım (`output: "export"`)
+olarak kalır — Next.js API route'ları/sunucusu yok; sunucu mantığı gerektiren her şey
+(iyzico secret key ile ödeme oturumu açma, webhook imza doğrulama, fiyat yeniden hesaplama,
+erişim token'ı üretme) **Supabase Edge Functions** (Deno) üzerinde çalışır, tarayıcı bunlara
+doğrudan `fetch` ile ulaşır (Vercel/Next.js sunucusuna gerek yok).
+
+**Uygulanan (v7):** `orders` tablosu ve INSERT-only RLS politikası (`supabase/schema.sql`),
+tarayıcıdan sipariş tamamlanınca yazan istemci (`src/lib/supabase-order.ts`, kurulum:
+`SUPABASE-KURULUM.md`). Bu, aşağıdaki Prisma modelinin veri şeklini birebir taşır ama yalnızca
+INSERT yapar; okuma Supabase Dashboard'dan (Table Editor, RLS'yi atlayan proje sahibi girişiyle).
+
+**Henüz yok (aşağıdaki Edge Functions ile eklenecek):** ödeme oturumu, webhook, teklif akışı,
+yıllık servis yenilemesi, erişim token'ı ile sorgulama/güncelleme, admin paneli.
+
+Prisma şeması aşağıda hâlâ veri modelinin referansı olarak kullanılıyor (alan adları
+`supabase/schema.sql`'de `snake_case`'e çevrilmiş durumda); gerçek depolama artık Prisma
+değil, doğrudan Supabase Postgres + SQL migration'lardır.
 
 ```prisma
 model Order {
@@ -259,9 +276,10 @@ enum ProjectStatus { YeniSiparis BilgilerBekleniyor Tasarim Gelistirme Revizyon 
 enum QuoteStatus { requested sent accepted paid declined expired }
 ```
 
-Uç noktalar:
-- **Sipariş ve ödeme:** `POST /api/orders`, `POST /api/payments/session`, `POST /api/webhooks/payment`. `paid` durumuna yalnızca webhook uç noktasında geçilir.
-- **Erişim bağlantısı:** `GET /api/orders/by-token/:token`, `POST /api/orders/by-token/:token/content`.
+Uç noktalar (Supabase Edge Functions, Next.js API route değil — bkz. yukarısı):
+- **Sipariş:** İstemci `orders` tablosuna doğrudan INSERT eder (anon key + RLS, uygulandı — bkz. yukarısı); sunucu tarafı fiyat doğrulaması olmadığından fiyat hâlâ istemciden geliyor, `pricingVersion` kontrolü Edge Function'a taşınana kadar tam güvenilir değildir.
+- **Ödeme:** `POST /functions/v1/create-payment-session` (iyzico oturumu açar, secret key burada), `POST /functions/v1/payment-webhook` (iyzico imzasını doğrular, `paid` durumuna yalnızca burada geçilir).
+- **Erişim bağlantısı:** `POST /functions/v1/order-by-token` (token'ın SHA-256 özetini karşılaştırır, sabit zamanlı), `POST /functions/v1/order-content` (proje formu güncellemesi).
 - **Teklif akışı** (sitedeki metin bu akışı vaat ediyor):
   1. Yönetici panelinde teklif tutarı girilir, `Quote.status=sent` olur.
   2. Müşteriye tek kullanımlık bağlantıyla e-posta gider.
@@ -301,7 +319,8 @@ Yayından önce yapılması gerekenler:
 ## 9. Yapılacaklar
 - [x] TypeScript'e ve gerçek sayfa adreslerine (Next.js, SSG) geçiş (v6)
 - [x] Sahibin siparişleri görebileceği geçici bir yer: ödeme tamamlanınca `src/lib/order-webhook.ts` sipariş özetini bir Google E-Tablo'ya yazar (bkz. SIPARIS-TAKIBI.md). Gerçek admin paneli/veritabanına (aşağıdaki madde) geçilince kaldırılabilir.
-- [ ] Backend, ödeme sağlayıcısı, teklif akışı ve yıllık servis yenilemesi (planlanan: Supabase)
+- [x] Supabase karar verildi (veri: Supabase, ödeme: iyzico) ve veri katmanının ilk parçası eklendi: `orders` tablosu + INSERT-only RLS (`supabase/schema.sql`), istemci yazımı (`src/lib/supabase-order.ts`, kurulum: `SUPABASE-KURULUM.md`)
+- [ ] iyzico entegrasyonu + Supabase Edge Functions: ödeme oturumu, webhook (imza doğrulama, `paid` geçişi, fiyat sunucuda yeniden hesaplama), erişim token'ı ile sorgulama/güncelleme, teklif akışı, yıllık servis yenilemesi (bkz. bölüm 8)
 - [ ] Bölüm 7b'deki tüm sunucu güvenlik maddeleri
 - [ ] Dosya yükleme, yönetici paneli, e-posta bildirimleri
 - [ ] Hukuki metinler (avukatla):

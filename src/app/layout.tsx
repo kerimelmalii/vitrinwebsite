@@ -18,7 +18,7 @@ const CSP = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data:",
   "font-src 'self'",
-  "connect-src 'self' https://script.google.com https://script.googleusercontent.com",
+  "connect-src 'self' https://script.google.com https://script.googleusercontent.com https://*.supabase.co",
   "form-action 'self'",
   "base-uri 'self'",
   "object-src 'none'",
