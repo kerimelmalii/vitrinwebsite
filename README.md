@@ -16,30 +16,43 @@ Ayrıntılar, yapılacaklar ve backend planı için: [DEVIR-BELGESI.md](DEVIR-BE
 
 ## Çalıştırma
 
-Derleme adımı yoktur. `index.html` dosyasını bir tarayıcıda açmanız yeterlidir.
-
-Yerel sunucuyla açmak isterseniz:
+Node.js 20 veya üzeri ve npm gerekir.
 
 ```bash
-python3 -m http.server 8000
-# ardından http://localhost:8000 adresini açın
+npm install
+npm run dev
+# http://localhost:3000
 ```
+
+Üretim derlemesi (statik dışa aktarım, `out/` klasörüne):
+
+```bash
+npm run build
+npx serve out   # yerel önizleme (herhangi bir statik dosya sunucusu da olur)
+```
+
+`out/` klasörü, herhangi bir statik dosya sunucusunda (Vercel, Netlify, Cloudflare Pages, Nginx, S3, ...) doğrudan barındırılabilir; Node.js sunucusu gerekmez.
 
 Demo ödemede `0002` ile biten kart numaraları reddedilir, diğerleri kabul edilir. Bireysel fatura için test T.C. kimlik no: `10000000146`.
 
 ## Teknoloji
 
-- Tek dosya: `index.html`
-- React 18 ve htm (jsdelivr, sürümü sabit, SRI ile doğrulanır)
-- Elle yazılmış CSS; derlenmiş Tailwind preflight ve birkaç yerleşim yardımcısı
-- Manrope yazı tipi dosyanın içine gömülüdür (SIL Open Font License 1.1)
+- **Next.js 16** (App Router) + **React 19**, tamamı **TypeScript**
+- Statik dışa aktarım (`output: "export"`): derleme sonucu, sunucu gerektirmeyen saf HTML/CSS/JS dosyalarıdır
+- Her sayfa kendi adresinde (`/blog/<slug>`, `/yasal/<id>`) gerçek, önceden üretilmiş (SSG) bir HTML dosyasıdır — arama motorları için doğrudan dizinlenebilir
+- Elle yazılmış CSS (`src/app/globals.css`); derlenmiş Tailwind preflight ve birkaç yerleşim yardımcısı korunmuştur
+- Manrope yazı tipi dosyanın kendi sunucusundan `woff2` olarak yüklenir (`public/fonts`), üçüncü tarafa istek gitmez
+- Sipariş durumu React Context ile yönetilir (`src/lib/order-context.tsx`), `localStorage` üzerinde kalıcıdır
 
-Planlanan canlı sürüm: Next.js + PostgreSQL + hosted ödeme sağlayıcısı (DEVIR-BELGESI.md, bölüm 8).
+## Proje yapısı
 
-## Dosyalar
-
-| Dosya | İçerik |
+| Yol | İçerik |
 |---|---|
-| `index.html` | Sitenin tamamı (sayfalar, sipariş akışı, blog, yasal metinler) |
+| `src/app/` | Sayfa rotaları (App Router): ana sayfa, `neden`, `ucretlendirme`, `blog`, `siparis`, `baslangic`, `yasal/[id]`, `sitemap.ts`, `robots.ts` |
+| `src/components/` | UI bileşenleri (başlık, altbilgi, sipariş adımları, blog, yasal metin gösterimi, ...) |
+| `src/lib/` | Yapılandırma, güvenlik/doğrulama yardımcıları, fiyatlandırma, sipariş depolama ve ödeme simülasyonu, tipler |
+| `src/data/` | İçerik: sektörler, ek özellikler, SSS, yasal metinler, blog yazıları, satıcı bilgileri |
+| `public/fonts/` | Manrope `woff2` dosyaları |
 | `DEVIR-BELGESI.md` | Projeyi devralacak geliştirici için ayrıntılı belge |
-| `README.md` | Bu dosya |
+
+Planlanan canlı sürüm: bu statik önyüz + PostgreSQL tabanlı bir API + hosted ödeme sağlayıcısı (DEVIR-BELGESI.md, bölüm 8).
