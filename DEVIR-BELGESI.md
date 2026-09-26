@@ -1,6 +1,8 @@
-# Vitrin: Devir Belgesi (v5)
+# Vitrin: Devir Belgesi (v6)
 
-Bu belge, projeyi başka bir yapay zekâ veya geliştiriciyle sürdürmek için hazırlandı. Yanında `index.html` (çalışan prototip) olmalı.
+Bu belge, projeyi başka bir yapay zekâ veya geliştiriciyle sürdürmek için hazırlandı. Proje artık tek bir `index.html` değil, `src/` altında TypeScript ile yazılmış bir Next.js (App Router) projesidir; ayrıntılar için [README.md](README.md).
+
+**v6 notu:** Proje, önceki sürümde React 18 + htm ile yazılmış tek dosyalık bir prototipti (derleme adımı yok, doğrudan tarayıcıda açılıyordu). v6'da bu, TypeScript ile yazılmış bir Next.js 16 (App Router) projesine dönüştürüldü: statik dışa aktarım (`output: "export"`) kullanıldığı için sonuç yine sunucu gerektirmeyen saf HTML/CSS/JS'tir, ama artık her sayfa gerçek bir adrese sahiptir (`#/blog/slug` yerine `/blog/slug`) ve derleme zamanında (SSG) üretilir. Bu, bölüm 7d'de belirtilen hash-routing/SEO sorununu çözer. İşlevsellik, tasarım, veriler ve güvenlik önlemleri birebir korundu; hiçbir metin veya davranış kasıtlı olarak değiştirilmedi.
 
 ## 1. Ne yapılıyor
 Türkçe bir satış sitesi: **5.000 TL'ye temel web sitesi**, ilk yıl servis ve bakım ücretsiz, 2. yıl 1.000 TL, sonraki yıllarda yıllık ücret enflasyon (TÜFE) oranında güncellenir. Taahhüt yok: müşteri ilk yılın sonunda (ve sonraki her yenilemeden önce) servisi ücretsiz iptal edebilir. Ek özellikler ayrı satılır.
@@ -9,26 +11,28 @@ Müşteri yolculuğu:
 siteye girer → fiyatı görür → (isterse "Neden Web Sitesi?" sayfasında araştırmaları okur) → "Web Siteni Şimdi Başlat" veya "Kendi Paketini Oluştur" → bilgilerini girer → ek özellik seçer, gerekirse teklif ister → öder → proje başlangıç formunu doldurur (hemen ya da erişim bağlantısıyla sonra).
 
 ## 2. Mevcut durum
-`index.html`: tek dosya. İçeriği:
-- React 18 + htm (jsdelivr, sürümü sabit, SRI ile doğrulanır),
-- Manrope yazı tipi dosyanın içine gömülü (Google Fonts'a istek yok; KVKK açısından üçüncü tarafa IP aktarımı azalır),
-- elle yazılmış CSS,
-- derlenmiş Tailwind preflight ve birkaç yerleşim yardımcısı (ikinci `<style>` bloğu).
+`src/`: Next.js 16 (App Router) + TypeScript projesi. İçeriği:
+- React 19, Next.js dosya tabanlı yönlendirme,
+- Manrope yazı tipi `public/fonts/` altında iki `woff2` dosyası olarak (Google Fonts'a istek yok; KVKK açısından üçüncü tarafa IP aktarımı azalır),
+- elle yazılmış CSS (`src/app/globals.css`),
+- derlenmiş Tailwind preflight ve birkaç yerleşim yardımcısı (aynı dosyanın sonunda).
 
-Derleme adımı yok.
+Derleme adımı var (`npm run build`), ama sonuç yine statik dosyalardır (`output: "export"`, `out/` klasörü); Node.js sunucusu gerekmez.
 
-Sayfalar (hash yönlendirme):
+Sayfalar (gerçek adresler, Next.js App Router):
 
-| Adres | Sayfa |
-|---|---|
-| `#/` | Ana sayfa |
-| `#/neden` | Neden Web Sitesi? |
-| `#/ucretlendirme` | Ücretlendirme |
-| `#/siparis` | Sipariş (4 adım) |
-| `#/baslangic` | Proje formu (`?t=` erişim bağlantısıyla da açılır) |
-| `#/blog`, `#/blog/<slug>` | Blog listesi ve yazılar (`BLOG` dizisi) |
-| `#/yasal/<id>` | Yasal metinler: `kvkk`, `cerez`, `mesafeli`, `iade`, `kosullar`, `ileti` |
-| bilinmeyen adres | "Sayfa bulunamadı" |
+| Adres | Dosya | Sayfa |
+|---|---|---|
+| `/` | `src/app/page.tsx` | Ana sayfa |
+| `/neden` | `src/app/neden/page.tsx` | Neden Web Sitesi? |
+| `/ucretlendirme` | `src/app/ucretlendirme/page.tsx` | Ücretlendirme |
+| `/siparis` | `src/app/siparis/page.tsx` | Sipariş (4 adım) |
+| `/baslangic` | `src/app/baslangic/page.tsx` | Proje formu (`?t=` erişim bağlantısıyla da açılır) |
+| `/blog`, `/blog/<slug>` | `src/app/blog/` | Blog listesi ve yazılar (`BLOG` dizisi, `src/data/blog.ts`) |
+| `/yasal/<id>` | `src/app/yasal/[id]/page.tsx` | Yasal metinler: `kvkk`, `cerez`, `mesafeli`, `iade`, `kosullar`, `ileti` |
+| bilinmeyen adres | `src/app/not-found.tsx` | "Sayfa bulunamadı" |
+
+Blog ve yasal sayfalar `generateStaticParams` ile derleme zamanında (SSG) üretilir; her biri gerçek, ayrı bir HTML dosyasıdır. `src/app/sitemap.ts` ve `src/app/robots.ts` site haritası ve `robots.txt`'i otomatik üretir (`/siparis` ve `/baslangic` dizinden hariç tutulur).
 
 **Simüle edilen (gerçek değil):**
 - **Ödeme (`PaymentProvider`):** 0002 ile biten kart reddedilir, diğerleri geçer. Bireysel fatura için test T.C. no: `10000000146`.
@@ -38,22 +42,19 @@ Sayfalar (hash yönlendirme):
 - **Teklif süreci:** Teklif hazırlama, onay ve ödeme bağlantısı yok. Arayüzde yalnızca talep ve açıklama var; akışın kendisi backend işi (bölüm 8).
 - **Yasal metinler:** Taslak yer tutucu (`LEGAL` sabiti). Her birinde bulunması gerekenler listeli.
 
-## 3. Kod yapısı (`index.html` içi, sırayla)
-1. **`<head>`:** meta, JSON-LD (fiyat 5000), `referrer` politikası, fontlar.
-2. **`<style>`:** tüm CSS. Renkler `:root` değişkenlerinde, yalnızca açık tema. Ardından derlenmiş Tailwind bloğu gelir; yeni bir Tailwind sınıfı eklenirse blok yeniden derlenmeli ya da sınıf CSS'e elle yazılmalı.
-3. **Kütüphaneler:** SRI'lı `<script>` etiketleri.
-4. **Uygulama çekirdeği:**
-   - Yapılandırma: `BASE_PRICE`, `YEARLY`, `PRICING_VERSION`, `VAT_INCLUDED`.
-   - Veri: `SECTORS`, `INCLUDED`, `ADDONS`, `QUOTE_ADDONS`, `FAQS`, `WHY`, `PROCESS`, `HERO_DEMOS`, `REFERENCES`.
-   - Güvenlik yardımcıları: `LIMITS`, `FILE_RULES`, `clean`, `RX`, `phoneOk`, `rand`, `token`, `validTCKN`.
-   - Veri katmanı: `Backend`, `buildRecord`, `recordToOrder`, `isRecord`, `PaymentProvider`, `LS`, `initOrder`, yönlendirme yardımcıları.
-5. **Ortak arayüz:** `Modal`, `LegalModal`, `Header`, `CheckoutHeader`, `Footer`, `AnimatedNumber`, `SectionHead`, mockup bileşenleri.
-6. **Ana sayfa:** `Hero`, `OfferPanel` (ana sayfa ve ücretlendirme ortak), `PriceOffer`, `WhyWebsite`, `IncludedFeatures`, `Process`, `AnnualService`, `About`, `FAQ`, `FinalCTA`, `Home`.
-7. **Ücretlendirme:** `AddonPriceList` (salt okunur fiyat listesi), `PricingPage`.
-8. **Neden Web Sitesi?:** `Trend`, `WHY_MAP`, `WHY_SOURCES`, `WhyPage`.
-9. **Sipariş:** `AddonList`, `QuoteAddons`, `QuoteNote`, `OrderSummary`, `Stepper`, `Shell`, `Field`, `Inp`, `BusinessInfoStep`, `PackageStep`, `DemoCardForm`, `PaymentStep`, `AccessLink`, `SuccessStep`, `Checkout`.
-10. **Proje formu:** `FileField`, `ProjectOnboarding`.
-11. **`App`.**
+## 3. Kod yapısı (`src/` altında)
+1. **`src/app/layout.tsx`:** kök düzen — meta, JSON-LD (fiyat 5000), `referrer` politikası, `OrderProvider` + `AppShell` sarmalayıcı.
+2. **`src/app/globals.css`:** tüm CSS. Renkler `:root` değişkenlerinde, yalnızca açık tema, ardından iki `@font-face` (Manrope) ve derlenmiş Tailwind bloğu; yeni bir Tailwind sınıfı eklenirse blok yeniden derlenmeli ya da sınıf CSS'e elle yazılmalı.
+3. **`src/lib/`:**
+   - Yapılandırma: `config.ts` (`BASE_PRICE`, `YEARLY`, `PRICING_VERSION`, `VAT_INCLUDED`, `money`, `TL`).
+   - Güvenlik yardımcıları: `security.ts` (`LIMITS`, `FILE_RULES`, `clean`, `RX`, `phoneOk`, `rand`, `token`, `validTCKN`).
+   - Veri katmanı: `backend.ts` (`Backend`, `buildRecord`, `recordToOrder`, `isRecord`), `payment.ts` (`PaymentProvider`), `storage.ts` (`LS`, `initOrder`, `blankOrder`), `pricing.ts` (`pricing`, `quoteLink`).
+   - `order-context.tsx`: `OrderProvider` / `useApp()` — sipariş durumu, `startCheckout`, `goSection`, yasal metin modali durumu (eski `App` bileşeninin sipariş/route state'inin yerini alır; yönlendirme artık Next.js router'ı kullanır).
+   - `types.ts`: paylaşılan TypeScript tipleri.
+4. **`src/data/`:** `content.ts` (`SECTORS`, `INCLUDED`, `ADDONS`, `QUOTE_ADDONS`, `FAQS`, `WHY`, `PROCESS`, `HERO_DEMOS`, `REFERENCES`, `NAV`), `company.ts` (`COMPANY`, `INSTAGRAM_URL`), `legal.ts` (`LEGAL_DOCS`, `LEGAL_LINKS`), `blog.ts` (`BLOG`).
+5. **`src/components/`:** `icons.tsx`, `modal.tsx`, `legal.tsx` (`LegalModal`/`LegalPage`/`NotFound`), `header.tsx`, `footer.tsx`, `app-shell.tsx`, `animated-number.tsx`, `section-head.tsx`, `mock-site.tsx`, `home.tsx` (`Hero`, `WhyWebsite`, `PackageSection`, `Process`, `AnnualService`, `About`, `FAQ`, `FinalCTA`, `StickyCTA`, `Home`), `pricing-page.tsx`, `why-page.tsx`, `blog.tsx` / `blog-post.tsx`, `offer-panel.tsx`, `addons.tsx` (`AddonList`, `QuoteAddons`, `QuoteNote`), `order-summary.tsx`, `order-box.tsx`, `onboarding.tsx` (`FileField`, `ProjectOnboarding`).
+6. **`src/components/checkout/`:** `stepper.tsx` (`Stepper`, `Shell`), `fields.tsx` (`Field`, `Inp`), `business-info-step.tsx`, `package-step.tsx`, `payment-step.tsx` (`DemoCardForm`, `PaymentStep`), `success-step.tsx` (`AccessLink`, `SuccessStep`), `checkout.tsx` (`Checkout`).
+7. **`src/app/*/page.tsx`:** her rota, ilgili bileşeni render eden ince bir dosya (bkz. bölüm 2'deki tablo); dinamik rotalarda (`blog/[slug]`, `yasal/[id]`) ayrıca `generateStaticParams`/`generateMetadata`.
 
 ## 4. Fiyatlar
 | Kalem | Fiyat |
@@ -290,13 +291,14 @@ Yayından önce yapılması gerekenler:
 - VERBİS kaydı yükümlülüğünün (çalışan sayısı ve ciro eşiklerine göre muafiyet olabilir) ve ETBİS kaydının gerekip gerekmediği mali müşavirle teyit edilmeli.
 - Pazarlama iletisi gönderilecekse İYS'ye kayıt olunmalı.
 - Sipariş onayı ve sözleşme örneği e-postası (kalıcı veri saklayıcısı) backend ile gönderilmeli; sitede bu vaat ediliyor.
-- Canlı sürümde React/htm dosyaları da kendi sunucudan sunulmalı; böylece CDN'e IP aktarımı kalmaz ve Çerez Politikası'ndaki ilgili cümle sadeleşir.
+- ~~Canlı sürümde React dosyaları da kendi sunucudan sunulmalı~~ — v6'da Next.js'e geçişle birlikte tüm kütüphaneler zaten npm bağımlılığı olarak derleniyor ve kendi sunucusundan sunuluyor; harici CDN'den betik yüklenmiyor.
 
 ## 7d. Blog
-- Yazılar `BLOG` dizisinde (slug, `cover`, tarih, başlık, özet, bloklar). Blog listesi, "Neden Web Sitesi?" kutularıyla aynı dilde yuvarlak köşeli kartlardan oluşur; her kartın üstünde bir kapak görseli var. Kapaklar `BlogCover` bileşeninde dosyanın içinde çizilmiş SVG'lerdir (`browser`, `map`, `search`); dış görsel yüklenmez. Yeni yazıya bu üçünden birini verin ya da yeni bir çizim ekleyin. Canlı sürümde gerçek fotoğraf kullanılacaksa sıkıştırılmış WebP/AVIF, `width`/`height` ve `loading="lazy"` ile eklenmeli. Üç yazı var: web sitesi ve Instagram karşılaştırması, Google İşletme Profili rehberi, küçük işletmeler için 7 adımda temel SEO. Yazılardaki rakamlar "Neden Web Sitesi?" sayfasındaki doğrulanmış kaynaklarla aynı; TÜİK 2026 Instagram oranı (%71,1) ek olarak kullanıldı.
-- **Önemli:** Hash tabanlı adresler (`#/blog/...`) arama motorlarınca ayrı sayfa olarak dizinlenmez. Blogun SEO değeri için Next.js'e geçişte her yazı `/blog/<slug>` adresinde, sunucuda üretilmiş (SSG) bir sayfa olmalı; başlık, açıklama, `Article` yapısal verisi ve site haritası eklenmeli.
+- Yazılar `BLOG` dizisinde (slug, `cover`, tarih, başlık, özet, bloklar; `src/data/blog.ts`). Blog listesi, "Neden Web Sitesi?" kutularıyla aynı dilde yuvarlak köşeli kartlardan oluşur; her kartın üstünde bir kapak görseli var. Kapaklar `BlogCover` bileşeninde (`src/components/blog.tsx`) dosyanın içinde çizilmiş SVG'lerdir (`browser`, `map`, `search`); dış görsel yüklenmez. Yeni yazıya bu üçünden birini verin ya da yeni bir çizim ekleyin. Canlı sürümde gerçek fotoğraf kullanılacaksa sıkıştırılmış WebP/AVIF ve `next/image` ile eklenmeli. Üç yazı var: web sitesi ve Instagram karşılaştırması, Google İşletme Profili rehberi, küçük işletmeler için 7 adımda temel SEO. Yazılardaki rakamlar "Neden Web Sitesi?" sayfasındaki doğrulanmış kaynaklarla aynı; TÜİK 2026 Instagram oranı (%71,1) ek olarak kullanıldı.
+- **v6'da çözüldü:** Her yazı artık gerçek `/blog/<slug>` adresinde, derleme zamanında üretilmiş (SSG) bir HTML sayfasıdır (`generateStaticParams`); başlık ve açıklama `generateMetadata` ile ayarlanır, `Article` yapısal verisi eklenmiştir, site haritası `src/app/sitemap.ts` ile otomatik üretilir.
 
 ## 9. Yapılacaklar
+- [x] TypeScript'e ve gerçek sayfa adreslerine (Next.js, SSG) geçiş (v6)
 - [ ] Backend, ödeme sağlayıcısı, teklif akışı ve yıllık servis yenilemesi
 - [ ] Bölüm 7b'deki tüm sunucu güvenlik maddeleri
 - [ ] Dosya yükleme, yönetici paneli, e-posta bildirimleri
@@ -304,7 +306,8 @@ Yayından önce yapılması gerekenler:
   - KVKK aydınlatma metni
   - Ön bilgilendirme formu + mesafeli satış sözleşmesi (cayma hakkı ve istisnası, yıllık ücret güncelleme ve iptal koşulları dahil)
   - Kullanım koşulları
-- [ ] Alan adı, OG görseli, Lighthouse ve erişilebilirlik denetimi
+- [ ] Alan adı bağlanınca `NEXT_PUBLIC_SITE_URL` ortam değişkeni gerçek adrese ayarlanmalı (`src/lib/site.ts`; site haritası ve `robots.txt` bunu kullanır)
+- [ ] OG görseli, Lighthouse ve erişilebilirlik denetimi
 - [ ] Gerçek referanslar geldikçe `REFERENCES`'a ekleme
 
 ## 10. Sahibinden netleşmesi gerekenler
@@ -323,19 +326,13 @@ Yayından önce yapılması gerekenler:
 - **Ödeme:** Ödeme sağlayıcısı ve fatura süreci.
 
 ## 11. Test notu
-Headless Chromium ile uçtan uca test edildi; konsolda hata yok. v4'te ayrıca 320, 390 ve 1280 px'te tam sipariş akışı (menü, paket kaydırması, mobil çubuk, üç adım, sözleşme penceresi ve sipariş tablosu, başarı, onaysız gönderimin engellenmesi, gönderim) ve 7 genişlikte tüm sayfalarda taşma taraması yapıldı. Önceki senaryolar:
-- Ana sayfa, `#/neden` ve ücretlendirme sayfalarının görüntülenmesi.
-- "Kendi Paketini Oluştur" butonunun adım 1'e gitmesi.
-- Adım 1 doğrulamaları ve düzeltilen alanda hatanın kaybolması.
-- Özel İstek boşken ilerlemenin engellenmesi.
-- Teklif açıklaması ve "Şimdi ödenecek" etiketi.
-- Üç red sonrası bekleme ve ardından başarılı ödeme.
-- Kayıtta `pricingVersion` ve `quoteRequests[].note` alanları.
-- Bozuk `localStorage` verisiyle açılış ve biçimi bozuk token.
-- Mobil görünüm (390 px).
+Headless Chromium (Playwright) ile uçtan uca test edildi; konsolda hata yok. v6'da (TypeScript/Next.js dönüşümü):
+- `npm run build` (statik dışa aktarım) ve `npx tsc --noEmit` hatasız; `npx eslint src` uyarısız.
+- `out/` klasörü statik bir sunucuyla servis edilip tüm rotalar (`/`, `/neden/`, `/ucretlendirme/`, `/blog/`, `/blog/<slug>/`, `/yasal/<id>/`, `/siparis/`, `/baslangic/`, bilinmeyen adres → 404) 1280 px ve 390 px'te ekran görüntüsüyle doğrulandı.
+- Tam sipariş akışı uçtan uca çalıştırıldı: ana sayfadan başlatma → adım 1 (bilgiler, sektör seçimi) → adım 2 (ek özellik seçimi, toplamın güncellenmesi) → adım 3 (kart ve fatura bilgileri, üç zorunlu onay, ödeme) → adım 4 (başarı ekranı, sipariş numarası, erişim bağlantısı).
+- Erişim bağlantısı: başarı ekranından `/baslangic/?t=...` bağlantısına geçiş, formun sipariş bilgileriyle önceden doldurulması, gönderim sonrası onay ekranı, bağlantının daha sonra tekrar açılmasında durumun `localStorage`'dan doğru yüklenmesi, biçimi geçerli ama eşleşmeyen bir `t` ile "bağlantı geçerli değil" ekranı.
+- `/baslangic` adresine ödeme yapılmadan gidilirse "önce siparişinizi tamamlayın" ekranı.
+- Yasal metin modalının sipariş adımından açılması, mobil menü, SSS akordeonunun varsayılan açık ilk sorusu.
+- Tarayıcı konsolunda hata veya uyarı yok (beklenen 404 dışında).
 
-SRI özetleri npm paketlerinden hesaplandı. jsdelivr `/npm/` dosyalarını birebir sunduğu için özetler eşleşir. Kütüphane sürümü değişirse özetler yeniden hesaplanmalı:
-
-```
-openssl dgst -sha384 -binary dosya.js | openssl base64 -A
-```
+Önceki (v5 ve öncesi, htm/CDN sürümü) test senaryoları değişmeden geçerliliğini korur: bot tuzağı, T.C. kimlik no ve vergi no doğrulaması, üç red sonrası 30 saniyelik kilit, bozuk `localStorage` verisiyle açılış, 320–1280 px arası taşma taraması. Kod artık npm bağımlılıkları (React/Next.js) kullandığından SRI özet doğrulaması `package-lock.json`'ın bütünlüğüne devretmiştir; harici CDN'den betik yüklenmez.
