@@ -33,11 +33,13 @@ npx serve out   # yerel önizleme (herhangi bir statik dosya sunucusu da olur)
 
 `out/` klasörü, herhangi bir statik dosya sunucusunda (Vercel, Netlify, Cloudflare Pages, Nginx, S3, ...) doğrudan barındırılabilir; Node.js sunucusu gerekmez.
 
-### GitHub Pages'te önizleme
+### Yayında: GitHub Pages + özel domain
 
-Depoda `.github/workflows/deploy-pages.yml` hazır: `main`'e her push'ta siteyi derleyip GitHub Pages'e yayınlar. Devreye alması için depo ayarlarında **bir kerelik** şu adım gerekir: **Settings → Pages → Build and deployment → Source** kısmını **"GitHub Actions"** olarak değiştirin (varsayılan "Deploy from a branch" ile çalışmaz). Ardından site `https://<kullanıcı-adı>.github.io/vitrinwebsite/` adresinde yayınlanır.
+Site şu an **`https://vitrinweb.com.tr`** adresinde, GitHub Pages'e özel domain bağlanarak yayında. `.github/workflows/deploy-pages.yml`, `main`'e her push'ta siteyi derleyip yayınlar; `public/CNAME` özel domain'i GitHub Pages'e bildirir.
 
-Bu yalnızca geçici bir önizlemedir; gerçek domain bağlandığında Vercel/Netlify gibi bir servise geçilmesi önerilir (bkz. `next.config.ts`'teki `GITHUB_PAGES` ortam değişkenine bağlı `basePath` ayarı — yalnızca GitHub Pages alt yolu için gereklidir, başka bir barındırmada devre dışıdır).
+`next.config.ts`'teki `GITHUB_PAGES` ortam değişkeni yalnızca `kullanıcı-adı.github.io/vitrinwebsite/` gibi bir **alt yoldan** önizleme yapılırken (özel domain yokken) `"true"` olmalı — o zaman `basePath`'i devreye sokar. Özel domain kökten sunulduğu için workflow'da artık `"false"`; yanlışlıkla `"true"` yapılırsa her link/asset `/vitrinwebsite/` önekiyle üretilir ve site kırılır.
+
+GitHub Pages HTTP başlığı desteklemediği için (CSP yalnızca `<meta>` etiketiyle uygulanıyor, HSTS/X-Frame-Options hiç yok) gerçek trafiğin geçtiği bu domain için Vercel'e geçiş önerilir (`vercel.json` hazır, bkz. Güvenlik bölümü).
 
 Demo ödemede `0002` ile biten kart numaraları reddedilir, diğerleri kabul edilir. Bireysel fatura için test T.C. kimlik no: `10000000146`.
 
@@ -75,5 +77,5 @@ Planlanan canlı sürüm: bu statik önyüz + Supabase (veri) + iyzico (ödeme),
 - `npm audit` temiz (0 bilinen açık), `package-lock.json` tüm sürümleri kilitler.
 - Üretim derlemesinde bir **Content-Security-Policy** uygulanır (`src/app/layout.tsx`); dış ağ isteklerini yalnızca kendi origin'ine, SIPARIS-TAKIBI.md'deki Google Apps Script adresine ve SUPABASE-KURULUM.md'deki Supabase projesine izin verecek şekilde kısıtlar.
 - Tüm kullanıcı girdisi uzunluk/biçim doğrulamasından geçer (`src/lib/security.ts`); T.C. kimlik no algoritma kontrolü, bot tuzağı, dosya türü/boyut/adet sınırı dahil. Bunlar yalnızca istemci tarafı kolaylıktır — gerçek bir backend eklenince sunucu tarafında da uygulanmalıdır (bkz. DEVIR-BELGESI.md bölüm 7b).
-- `vercel.json`, gerçek bir sunucuya (Vercel) geçilince otomatik uygulanacak tam HTTP güvenlik başlığı setini (CSP, HSTS, `X-Frame-Options`, `Permissions-Policy`) içerir. **GitHub Pages bu başlıkları hiçbir şekilde desteklemez** — bu yüzden GitHub Pages yalnızca geçici bir önizleme olarak düşünülmelidir, nihai barındırma olarak değil.
+- `vercel.json`, gerçek bir sunucuya (Vercel) geçilince otomatik uygulanacak tam HTTP güvenlik başlığı setini (CSP, HSTS, `X-Frame-Options`, `Permissions-Policy`) içerir. **GitHub Pages bu başlıkları hiçbir şekilde desteklemez**, özel domain bağlansa bile — site şu an gerçek trafik aldığı için bu geçiş öncelikli bir yapılacak, "ileride yapılır" değil.
 - Ayrıntılı tehdit modeli ve sunucu tarafında yapılması gerekenler için DEVIR-BELGESI.md bölüm 7.

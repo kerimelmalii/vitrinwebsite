@@ -167,7 +167,7 @@ Sayfada, yurt dışı verilerin Türkiye'ye ait birebir oranlar olmadığı aç�
 ### 7b. İstemcide yapılamayan, sunucuda mutlaka yapılması gerekenler
 Tarayıcıdaki hiçbir kontrol bir güvenlik sınırı değildir; kullanıcı hepsini atlayabilir. Gerçek güvenlik aşağıdakilerle sağlanır.
 
-**HTTP güvenlik başlıkları.** `vercel.json` bunları zaten tanımlıyor (Vercel'e geçilince otomatik uygulanır); **GitHub Pages özel HTTP başlığı desteklemez** — orada yalnızca yukarıdaki `<meta>` CSP ve `<meta name="referrer">` etkilidir, `X-Frame-Options`/HSTS/`Permissions-Policy` GitHub Pages'te **hiçbir şekilde ayarlanamaz**. Bu, GitHub Pages'in geçici bir önizleme olmasının, gerçek bir üretim sunucusu olmamasının başlıca nedenlerinden biridir.
+**HTTP güvenlik başlıkları.** `vercel.json` bunları zaten tanımlıyor (Vercel'e geçilince otomatik uygulanır); **GitHub Pages özel HTTP başlığı desteklemez** — özel domain (`vitrinweb.com.tr`) bağlansa bile durum değişmez. Orada yalnızca yukarıdaki `<meta>` CSP ve `<meta name="referrer">` etkilidir, `X-Frame-Options`/HSTS/`Permissions-Policy` GitHub Pages'te **hiçbir şekilde ayarlanamaz**. Site artık bu domain'de gerçek trafik aldığı için Vercel'e geçiş öncelikli bir yapılacak.
 ```
 Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com <ödeme-sağlayıcı-api>; frame-src <ödeme-sağlayıcı-iframe>; form-action 'self' <ödeme-sağlayıcı>; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; upgrade-insecure-requests
 Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
@@ -328,7 +328,8 @@ Yayından önce yapılması gerekenler:
   - KVKK aydınlatma metni
   - Ön bilgilendirme formu + mesafeli satış sözleşmesi (cayma hakkı ve istisnası, yıllık ücret güncelleme ve iptal koşulları dahil)
   - Kullanım koşulları
-- [ ] Alan adı bağlanınca `NEXT_PUBLIC_SITE_URL` ortam değişkeni gerçek adrese ayarlanmalı (`src/lib/site.ts`; site haritası ve `robots.txt` bunu kullanır)
+- [x] Alan adı bağlandı (`vitrinweb.com.tr`, `public/CNAME`) ve `NEXT_PUBLIC_SITE_URL` gerçek adrese ayarlandı (`.github/workflows/deploy-pages.yml`; site haritası, `robots.txt` ve canonical URL'ler bunu kullanır). `GITHUB_PAGES` bayrağı bu yüzden `"false"`'a çekildi — özel domain kökten sunuluyor, alt yol basePath'i artık gerekmiyor.
+- [ ] Vercel'e geçiş: özel domain artık gerçek trafik aldığından GitHub Pages'in HTTP başlığı sınırlaması (yukarıda) öncelikli hâle geldi
 - [ ] OG görseli, Lighthouse ve erişilebilirlik denetimi
 - [ ] Gerçek referanslar geldikçe `REFERENCES`'a ekleme
 
