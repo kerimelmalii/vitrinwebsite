@@ -64,3 +64,11 @@ Demo ödemede `0002` ile biten kart numaraları reddedilir, diğerleri kabul edi
 | `SIPARIS-TAKIBI.md` | Sipariş bildirimi (Google E-Tablo) kurulum rehberi |
 
 Planlanan canlı sürüm: bu statik önyüz + PostgreSQL tabanlı bir API + hosted ödeme sağlayıcısı (DEVIR-BELGESI.md, bölüm 8).
+
+## Güvenlik
+
+- `npm audit` temiz (0 bilinen açık), `package-lock.json` tüm sürümleri kilitler.
+- Üretim derlemesinde bir **Content-Security-Policy** uygulanır (`src/app/layout.tsx`); dış ağ isteklerini yalnızca kendi origin'ine ve SIPARIS-TAKIBI.md'deki Google Apps Script adresine izin verecek şekilde kısıtlar.
+- Tüm kullanıcı girdisi uzunluk/biçim doğrulamasından geçer (`src/lib/security.ts`); T.C. kimlik no algoritma kontrolü, bot tuzağı, dosya türü/boyut/adet sınırı dahil. Bunlar yalnızca istemci tarafı kolaylıktır — gerçek bir backend eklenince sunucu tarafında da uygulanmalıdır (bkz. DEVIR-BELGESI.md bölüm 7b).
+- `vercel.json`, gerçek bir sunucuya (Vercel) geçilince otomatik uygulanacak tam HTTP güvenlik başlığı setini (CSP, HSTS, `X-Frame-Options`, `Permissions-Policy`) içerir. **GitHub Pages bu başlıkları hiçbir şekilde desteklemez** — bu yüzden GitHub Pages yalnızca geçici bir önizleme olarak düşünülmelidir, nihai barındırma olarak değil.
+- Ayrıntılı tehdit modeli ve sunucu tarafında yapılması gerekenler için DEVIR-BELGESI.md bölüm 7.

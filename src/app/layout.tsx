@@ -2,7 +2,27 @@ import type { Metadata, Viewport } from "next";
 import { OrderProvider } from "@/lib/order-context";
 import { AppShell } from "@/components/app-shell";
 import { BASE_PRICE, money } from "@/lib/config";
+import { safeJsonLd } from "@/lib/json-ld";
 import "./globals.css";
+
+/* Statik dışa aktarımda her sayfa aynı, önceden üretilmiş HTML olarak sunulduğundan sunucu
+   nonce üretemez; bu yüzden script-src 'unsafe-inline' içerir (Next.js'in kendi hydration
+   betikleri için zorunludur). Buradaki gerçek koruma connect-src'tir: kod içine sızan bir
+   bağımlılık olsa bile veriyi yalnızca aynı origin'e ve izin verilen Google Apps Script
+   uç noktasına gönderebilir, başka bir yere değil. Gerçek bir sunucuya (Vercel vb.) geçilince
+   bu politika HTTP başlığı olarak ve nonce ile sıkılaştırılabilir (bkz. vercel.json). */
+const CSP = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline'",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data:",
+  "font-src 'self'",
+  "connect-src 'self' https://script.google.com https://script.googleusercontent.com",
+  "form-action 'self'",
+  "base-uri 'self'",
+  "object-src 'none'",
+  "upgrade-insecure-requests",
+].join("; ");
 
 const SITE_TITLE = `${money(BASE_PRICE)} TL'ye profesyonel web sitesi`;
 const SITE_DESCRIPTION =
@@ -40,10 +60,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="tr">
       <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
+        {process.env.NODE_ENV === "production" && <meta httpEquiv="Content-Security-Policy" content={CSP} />}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
       </head>
       <body>
         <a className="skip" href="#main">

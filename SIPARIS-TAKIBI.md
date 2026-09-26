@@ -16,8 +16,11 @@ Bu, ücretsiz ve ~10 dakikalık bir kurulumdur. İlk birkaç siparişten sonra g
 2. Açılan editördeki hazır kodu (`function myFunction() {}`) sil, aşağıdaki kodu yapıştır:
 
 ```javascript
-// Bu anahtarı sitenin GitHub ayarlarındaki ORDER_WEBHOOK_SECRET ile birebir aynı yapın.
-const SHARED_SECRET = "LkGYs3j-vVpRo4Cej9p67vNCI8iCzSBQ";
+// ÖNEMLİ: Aşağıdaki metni olduğu gibi bırakmayın, kendi rastgele değerinizle değiştirin.
+// Bir tane üretmek için: bu kodu geçici olarak yapıştırıp "Çalıştır (Run)" deyin, sonra
+// üstteki "Yürütme günlüğü (Execution log)" sekmesinde çıkan değeri kopyalayıp SHARED_SECRET
+// olarak buraya yapıştırın: function uretVeYazdir(){Logger.log(Utilities.getUuid())}
+const SHARED_SECRET = "BURAYA_KENDI_RASTGELE_ANAHTARINIZI_YAZIN";
 
 const HEADERS = [
   "Tarih", "Sipariş No", "Ad Soyad", "Telefon", "E-posta",
@@ -64,7 +67,7 @@ function doPost(e) {
 
 3. Sol üstte "Untitled project" yazan yere tıklayıp adını **"Vitrin Sipariş Bildirimi"** yap, sonra disket (kaydet) simgesine bas.
 
-> `SHARED_SECRET` değerini yukarıdaki gibi bıraksan da olur, kendi rastgele metninle de değiştirebilirsin — önemli olan, aşağıdaki adım 4'te GitHub'a gireceğin `ORDER_WEBHOOK_SECRET` ile **birebir aynı** olması.
+> `SHARED_SECRET`'i mutlaka değiştir (yukarıdaki metni olduğu gibi bırakma) — önemli olan, aşağıdaki adım 4'te GitHub'a gireceğin `ORDER_WEBHOOK_SECRET` ile **birebir aynı** olması.
 
 ## 3. Web uygulaması olarak yayınla
 
@@ -94,3 +97,4 @@ Bir müşteri ödemeyi tamamladığı anda (adım 3'ün sonu), sipariş özeti b
 
 - Bu statik bir site olduğundan, `ORDER_WEBHOOK_URL` ve `ORDER_WEBHOOK_SECRET` tarayıcıya gönderilen kodun içinde bulunur — isteyen biri geliştirici araçlarından görebilir. Bu yüzden secret bir "şifre" değil, yalnızca rastgele bot/tarama isteklerini eleyen bir filtredir. Gerçek güvenlik, tablonun kendisinin paylaşılmamasından ve uç noktanın veri **döndürmemesinden** (yalnızca yazmasından) gelir.
 - Bu geçici bir çözümdür. Gerçek bir admin paneli (şifreyle korunan, durum güncellemeye izin veren) istediğinde, DEVIR-BELGESI.md bölüm 8'deki backend planına geçilmesi önerilir.
+- Bu belgenin ilk sürümünde örnek olarak sabit bir `SHARED_SECRET` değeri verilmişti; o değer artık genel (public) depo geçmişinde göründüğü için **kesinlikle kullanılmamalı**. Apps Script'i kurarken mutlaka kendi rastgele değerinizi üretip kullanın.

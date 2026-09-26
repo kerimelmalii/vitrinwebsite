@@ -140,8 +140,9 @@ Sayfada, yurt dışı verilerin Türkiye'ye ait birebir oranlar olmadığı aç�
 ## 7. Güvenlik
 
 ### 7a. Prototipte yapılanlar
-- **Kütüphane bütünlüğü:** React, ReactDOM ve htm sürümü sabit, `integrity` (SHA-384) ve `crossorigin` ile yüklenir. CDN'deki dosya değişirse tarayıcı çalıştırmaz. Tailwind CDN yok.
-- **XSS:** Tüm kullanıcı verisi React ile kaçışlanarak basılır. `dangerouslySetInnerHTML` yalnızca sabit ikon SVG'lerinde kullanılır. Kullanıcının girdiği adresler hiçbir zaman bağlantı olarak basılmaz.
+- **Bağımlılık bütünlüğü (v6):** Kütüphaneler artık CDN'den değil, npm üzerinden derleniyor; `package-lock.json` tam sürüm ve bütünlük özetlerini (integrity hash) kilitler, `npm ci` bunları doğrular. `npm audit` temiz (0 bilinen güvenlik açığı, düzenli olarak tekrar çalıştırılmalı).
+- **XSS:** Tüm kullanıcı verisi React ile kaçışlanarak basılır. `dangerouslySetInnerHTML` yalnızca sabit ikon SVG'lerinde ve kendi ürettiğimiz JSON-LD verisinde kullanılır (kullanıcı girdisi hiçbir zaman bu yolla basılmaz); JSON-LD ayrıca `safeJsonLd()` ile `<` karakterlerini kaçışlayarak olası bir `</script>` kaçışına karşı korunur. Kullanıcının girdiği adresler hiçbir zaman bağlantı olarak basılmaz.
+- **İçerik Güvenliği Politikası (CSP):** `src/app/layout.tsx`, üretim derlemesinde bir `<meta>` CSP ekler (`default-src 'self'`, sıkı `connect-src` yalnızca kendi origin'i ve SIPARIS-TAKIBI.md'deki Google Apps Script uç noktasına izin verir). Statik dışa aktarımda sunucu nonce üretemediği için `script-src`/`style-src` `'unsafe-inline'` içermek zorunda (Next.js'in kendi hydration betikleri ve satır içi `style` özniteliği için) — bu yüzden asıl kazanım inline script koruması değil, **connect-src ile veri sızdırma (exfiltration) engeli**: sızan bir bağımlılık olsa bile veri yalnızca izinli adreslere gönderilebilir. `vercel.json` gerçek bir sunucuya geçilince bu politikayı HTTP başlığı olarak (ve `frame-ancestors`, `X-Frame-Options`, HSTS, `Permissions-Policy` ile) sıkılaştırır — bkz. 7b.
 - **Girdi:**
   - Her alanda uzunluk sınırı (`LIMITS`) ve kontrol karakteri temizliği (`clean`) var.
   - Biçim doğrulama `RX` (e-posta, adres, Instagram, token, sipariş kimliği), `phoneOk` ve `validTCKN` ile yapılır.
@@ -166,16 +167,16 @@ Sayfada, yurt dışı verilerin Türkiye'ye ait birebir oranlar olmadığı aç�
 ### 7b. İstemcide yapılamayan, sunucuda mutlaka yapılması gerekenler
 Tarayıcıdaki hiçbir kontrol bir güvenlik sınırı değildir; kullanıcı hepsini atlayabilir. Gerçek güvenlik aşağıdakilerle sağlanır.
 
-**HTTP güvenlik başlıkları.** Next.js `headers()` ya da sunucu yapılandırmasıyla eklenir:
+**HTTP güvenlik başlıkları.** `vercel.json` bunları zaten tanımlıyor (Vercel'e geçilince otomatik uygulanır); **GitHub Pages özel HTTP başlığı desteklemez** — orada yalnızca yukarıdaki `<meta>` CSP ve `<meta name="referrer">` etkilidir, `X-Frame-Options`/HSTS/`Permissions-Policy` GitHub Pages'te **hiçbir şekilde ayarlanamaz**. Bu, GitHub Pages'in geçici bir önizleme olmasının, gerçek bir üretim sunucusu olmamasının başlıca nedenlerinden biridir.
 ```
-Content-Security-Policy: default-src 'none'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' <ödeme-sağlayıcı-api>; frame-src <ödeme-sağlayıcı-iframe>; form-action 'self' <ödeme-sağlayıcı>; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; upgrade-insecure-requests
+Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com <ödeme-sağlayıcı-api>; frame-src <ödeme-sağlayıcı-iframe>; form-action 'self' <ödeme-sağlayıcı>; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; upgrade-insecure-requests
 Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
 X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
 Referrer-Policy: strict-origin-when-cross-origin
 Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(self <sağlayıcı>)
-Cross-Origin-Opener-Policy: same-origin
 ```
-Next.js'e geçince satır içi betik kalmayacağı için `script-src` yalnızca `'self'` olabilir (nonce ile). `#/baslangic` sayfası için `X-Robots-Tag: noindex` eklenmeli.
+Gerçek bir backend'e (sunucu tarafı render veya route handler) geçilince `script-src`/`style-src`'ten `'unsafe-inline'` kaldırılıp nonce tabanlı bir CSP'ye geçilebilir; statik dışa aktarımda bu mümkün değil (bkz. 7a). `/baslangic` ve `/siparis` sayfaları zaten `robots: {index:false}` ile `noindex` ediliyor (bkz. bölüm 2 tablosu).
 
 **Diğer sunucu kontrolleri:**
 - **Doğrulama:** Her uç nokta girdisini bir şemayla (ör. Zod) doğrular; kurallar `LIMITS`/`RX` ile aynıdır. Fazladan alanlar reddedilir.
@@ -335,5 +336,6 @@ Headless Chromium (Playwright) ile uçtan uca test edildi; konsolda hata yok. v6
 - `/baslangic` adresine ödeme yapılmadan gidilirse "önce siparişinizi tamamlayın" ekranı.
 - Yasal metin modalının sipariş adımından açılması, mobil menü, SSS akordeonunun varsayılan açık ilk sorusu.
 - Tarayıcı konsolunda hata veya uyarı yok (beklenen 404 dışında).
+- **Güvenlik denetimi (v6.1):** `npm audit` 0 bilinen açık; depoda sızmış gerçek bir sır/anahtar yok (yalnızca SIPARIS-TAKIBI.md'nin ilk sürümündeki, artık geçersiz sayılması gereken örnek değer — bkz. o dosyadaki uyarı); tüm sayfalarda `document.addEventListener("securitypolicyviolation", ...)` ile CSP ihlali taraması yapıldı, sıfır ihlal; `?t=` erişim bağlantısında biçimi bozuk bir token artık doğru şekilde "bağlantı geçerli değil" ekranını gösteriyor (önceden yanlışlıkla farklı bir ekrana düşen bir hata düzeltildi).
 
 Önceki (v5 ve öncesi, htm/CDN sürümü) test senaryoları değişmeden geçerliliğini korur: bot tuzağı, T.C. kimlik no ve vergi no doğrulaması, üç red sonrası 30 saniyelik kilit, bozuk `localStorage` verisiyle açılış, 320–1280 px arası taşma taraması. Kod artık npm bağımlılıkları (React/Next.js) kullandığından SRI özet doğrulaması `package-lock.json`'ın bütünlüğüne devretmiştir; harici CDN'den betik yüklenmez.
