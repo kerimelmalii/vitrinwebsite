@@ -49,6 +49,7 @@ Demo ödemede `0002` ile biten kart numaraları reddedilir, diğerleri kabul edi
 - Elle yazılmış CSS (`src/app/globals.css`); derlenmiş Tailwind preflight ve birkaç yerleşim yardımcısı korunmuştur
 - Manrope yazı tipi dosyanın kendi sunucusundan `woff2` olarak yüklenir (`src/app/fonts`), üçüncü tarafa istek gitmez
 - Sipariş durumu React Context ile yönetilir (`src/lib/order-context.tsx`), `localStorage` üzerinde kalıcıdır
+- SEO: her sayfa için canonical URL, dinamik Open Graph/Twitter Card görselleri (`next/og`), JSON-LD (`Service`, `FAQPage`, `Article`, `BreadcrumbList`), `sitemap.xml`'de `lastModified`
 
 ## Proje yapısı
 
@@ -59,6 +60,7 @@ Demo ödemede `0002` ile biten kart numaraları reddedilir, diğerleri kabul edi
 | `src/lib/` | Yapılandırma, güvenlik/doğrulama yardımcıları, fiyatlandırma, sipariş depolama ve ödeme simülasyonu, tipler |
 | `src/data/` | İçerik: sektörler, ek özellikler, SSS, yasal metinler, blog yazıları, satıcı bilgileri |
 | `src/app/fonts/` | Manrope `woff2` dosyaları |
+| `src/app/og-fonts/` | Manrope `ttf` dosyaları (yalnızca derleme sırasında Open Graph görselleri için, `next/og` woff2 desteklemez) |
 | `src/lib/order-webhook.ts` | Ödeme tamamlanınca sipariş özetini Google E-Tablo'ya bildiren yardımcı (bkz. SIPARIS-TAKIBI.md) |
 | `DEVIR-BELGESI.md` | Projeyi devralacak geliştirici için ayrıntılı belge |
 | `SIPARIS-TAKIBI.md` | Sipariş bildirimi (Google E-Tablo) kurulum rehberi |

@@ -21,7 +21,9 @@ export async function generateMetadata({
   return {
     title: post.title,
     description: post.excerpt,
+    alternates: { canonical: `/blog/${post.slug}` },
     openGraph: { title: post.title, description: post.excerpt, type: "article" },
+    twitter: { card: "summary_large_image", title: post.title, description: post.excerpt },
   };
 }
 
@@ -39,9 +41,19 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
     publisher: { "@type": "Organization", name: COMPANY.brand },
     mainEntityOfPage: `${SITE_URL}/blog/${post.slug}`,
   };
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Anasayfa", item: SITE_URL },
+      { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE_URL}/blog` },
+      { "@type": "ListItem", position: 3, name: post.title, item: `${SITE_URL}/blog/${post.slug}` },
+    ],
+  };
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbLd) }} />
       <BlogPost slug={slug} />
     </>
   );

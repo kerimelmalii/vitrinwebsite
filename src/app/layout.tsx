@@ -3,6 +3,7 @@ import { OrderProvider } from "@/lib/order-context";
 import { AppShell } from "@/components/app-shell";
 import { BASE_PRICE, money } from "@/lib/config";
 import { safeJsonLd } from "@/lib/json-ld";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 /* Statik dışa aktarımda her sayfa aynı, önceden üretilmiş HTML olarak sunulduğundan sunucu
@@ -29,12 +30,21 @@ const SITE_DESCRIPTION =
   "İşletmenizin dijital vitrini. 5.000 TL'ye modern, hızlı ve mobil uyumlu web sitesi. İlk yıl servis ve bakım ücretsiz, taahhüt yok. Siparişinizi dakikalar içinde oluşturun.";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: { default: `Vitrin | ${SITE_TITLE}`, template: "%s | Vitrin" },
   description: SITE_DESCRIPTION,
+  alternates: { canonical: "/" },
   openGraph: {
     title: SITE_TITLE,
     description: "Modern, hızlı ve mobil uyumlu web siteniz. İlk yıl servis ve bakım ücreti yok.",
     type: "website",
+    siteName: "Vitrin",
+    locale: "tr_TR",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_TITLE,
+    description: "Modern, hızlı ve mobil uyumlu web siteniz. İlk yıl servis ve bakım ücreti yok.",
   },
   other: {
     referrer: "strict-origin-when-cross-origin",

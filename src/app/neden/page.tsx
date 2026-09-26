@@ -4,6 +4,7 @@ import { WhyPage } from "@/components/why-page";
 export const metadata: Metadata = {
   title: "Neden web sitesi?",
   description: "İşletmeniz için bir web sitesinin neden önemli olduğunu araştırmalarla anlatıyoruz.",
+  alternates: { canonical: "/neden" },
 };
 
 export default function Page() {
